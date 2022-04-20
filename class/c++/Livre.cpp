@@ -51,7 +51,7 @@ void Livre::setPrix(double prix){
 void Livre::setNbPage(int nombre_de_page){
     //Le nombre de page ne peut pas être négatif et égale à 0!
     if(nombre_de_page<0){
-        std::cout<<"Le prix ne peut pas être inferieur à 0"<<std::endl;
+        std::cout<<"Le nombre de page ne peut pas être inferieur à 0"<<std::endl;
     }
     else{
         this->nombre_de_page=nombre_de_page;
