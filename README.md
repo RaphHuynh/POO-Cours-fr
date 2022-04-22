@@ -25,11 +25,12 @@ Ces langages sont utilisés comme exemple.
     - Qu’est-ce qu’une classe ?
     - Agrégation et composition
 2. Héritage
+    - Qu’est-ce que l’héritage ?
     - Héritage simple
     - Polymorphisme
-    - Héritage multiple
     - Redéfinition
     - Surcharge
+    - Héritage multiple
 3. UML
     - Diagramme de classe
     - Diagramme
@@ -456,7 +457,7 @@ Livre::Livre(){
 Livre::Livre(std::string titre,std::string auteur,std::string editeur,std::string resume,std::string isbn, double prix, int nombre_de_page):auteur(auteur),titre(titre),editeur(editeur),resume(resume),isbn(isbn),prix(prix),nombre_de_page(nombre_de_page){};
 
 //par copie
-Livre::Livre(Livre const&l):titre(l.titre),auteur(l.auteur),editeur(l.editeur),resume(l.resume),isbn(l.isbn),prix(l.prix),nombre_de_page(l.nombre_de_page){};
+Livre::Livre(Livre const& l):titre(l.titre),auteur(l.auteur),editeur(l.editeur),resume(l.resume),isbn(l.isbn),prix(l.prix),nombre_de_page(l.nombre_de_page){};
 
 //destructeur
 Livre::~Livre(){
@@ -1122,10 +1123,574 @@ Commande à entrer dans le terminal depuis le repertoire ou se trouve le fichier
 #sinon
 g++ main.cpp -o main.o -c
 g++ Lune.cpp -o Lune.o -c
-g++ Batiment.cpp -o Batiment-.o -c
+g++ Batiment.cpp -o Batiment.o -c
 g++ -o program main.o Lune.o Batiment.o
 ./prog
 ```
+
+---
+
+Nous allons nous attaquer à l’un des principes les plus important de la programmation orientée objet.
+Nous allons évoquer la notions d’**héritage** et de **polymorphisme** !
+
+# Héritage
+
+## Qu’est ce que l’héritage ?
+
+L’héritage est un type de lien qui permet de construire des relations plus complexes que celle que nous avons étudié précédemment.
+Son principe repose qu’au moment où des objets de types différents possèdent des caractéristiques en communs le traitement de ces caractéristiques peuvent être appliqué de la même façon sans ternir compte du types des objets concernés.
+
+### Exemple :
+
+Considérons un livre et un manga ou bande dessinée (selon vos préférence).
+Un livre et un manga possèdent de nombreux points communs. En outre le manga possède toute les caractéristiques d’un livre mais il possède seulement en plus un dessinteur.
+Est-il nécessaire de devoir redéfinir l’objet manga entièrement sans prendre en compte l’objet livre ?
+Non, on utilisera dans ce contexte le principe de l’héritage.
+Dans ce cas pour réutiliser les caractéristiques communes entre ces deux objets, nous devons définir la classe Mère dite aussi classe de base puis nous déterminerons la ou les classes filles dite classe par dérivation.
+On dit alors que la classe Manga est fille de la Classe Livre.
+
+L’héritage peut être multiple, mais dans un premier temps nous allons aborder l’héritage simple.
+
+## Héritage simple
+
+La mise en place d’un héritage simple ce faire comme ceci :
+
+- java
+
+```java
+//fichier Livre.java (Classe Mère, de base)
+public class Livre{
+//...contenue
+};
+
+//fichier Manga.java (Classe Fille, dérivé)
+public class Manga extend Livre{
+//...contenue
+};
+```
+
+- C++
+
+```cpp
+//Fichier Livre.h (Classe Mère, de base)
+class Livre {
+//...contenue
+};
+
+//Fichier Manga.h (Classe Fill, dérivé)
+class Manga: public Livre {
+//...contenue
+};
+```
+
+Cela implique que tout les éléments de la classe Livre intègre la classe Manga.
+Toutes les méthodes de Livre, c’est-à-dire les constructeurs, les destructeurs et autres intégre la classe Manga.
+De plus tout les attributs non privés de la classe Livre intègre aussi la classe Manga.
+
+La notion de porter prend de l’importance dans l’héritage nottamment le concept de protected (protection).
+En outre, un attribut privé n’appartient qu’à la classe où elle est définit, hors si l’attribut est protected la classe fille à accès à cette attribut.
+La porter est aussi prise en compte pour les méthodes !
+
+Un constructeur d’une classe fille doit être défini de manière à prendre en compte les attributs héritées et ces propres attributs.
+
+### Constructeur d’un classe fille (dérivée)
+
+Nous allons donc illustrer les différents constructeur en JAVA et C++
+
+1. Constructeur par défaut
+- Java
+
+```java
+//fichier de la class Livre.java
+class Livre{
+	//...contenue
+	//Constructeur de la classe Mere Livre
+	public Livre(){
+		titre="defaut"
+		auteur="defaut"
+		//... avec tout les attributs de la classe
+	}
+}
+
+//fichier de la class Manga.java
+class Manga extend Livre{
+	/...
+	//constructeur de la classe Fille
+	public Manga(){
+		//appel du constructeur par defaut de la class Mere Livre
+		super();
+		//puis on remplit les attributs de la classe fille
+		dessinateur="defaut";
+	}
+}
+```
+
+- C++
+
+```cpp
+//Livre.h
+class Livre{
+	protected:
+		std::string titre;
+		std::string auteur;
+	public:
+		Livre();
+}
+//Livre.cpp
+Livre::Livre(){
+	titre="defaut";
+	auteur="defaut";
+}
+
+//Manga.h
+class Manga : public Livre{
+	private:
+		std::string dessinateur;
+	public:
+		Manga();
+}
+
+//Manga.cpp
+Manga::Manga():Livre(){
+	dessinateur="defaut";
+}
+```
+
+1. Constructeur par initialisation
+- Java
+
+```java
+//fichier de la class Livre.java
+class Livre{
+	//attribut
+	protected String auteur;
+	protected String titre;
+	//Constructeur de la classe Mere Livre
+	public Livre(String titre, String auteur){
+		this.titre=titre;
+		this.auteur=auteur;
+	}
+}
+
+//fichier de la class Manga.java
+class Manga extend Livre{
+	private String dessinateur;
+	//constructeur de la classe Fille
+	public Manga(String titre, String auteur, String dessinateur){
+		//appel du constructeur par defaut de la class Mere Livre
+		super(titre, auteur);
+		//puis on remplit les attributs de la classe fille
+		this.dessinateur=dessinateur;
+	}
+}
+```
+
+- C++
+
+```cpp
+//Livre.h
+class Livre{
+	protected:
+		std::string titre;
+		std::string auteur;
+	public:
+		Livre(std::string titre, std::auteur);
+}
+//Livre.cpp
+Livre::Livre(std::string titre, std::string auteur):titre(titre),auteur(auteur){}
+
+//Manga.h
+class Manga : public Livre{
+	private:
+		std::string dessinateur;
+	public:
+		Manga(std::string titre, std::string auteur, std::string dessinateur);
+}
+
+//Manga.cpp
+Manga::Manga(std::string titre, std::string auteur, std::string dessinateur):Livre(titre,auteur), dessinateur(dessinateur){}
+```
+
+1. Constructeur par copie
+- Java
+
+```java
+//fichier de la class Livre.java
+class Livre{
+	//...contenue
+	//Constructeur de la classe Mere Livre
+	public Livre(Livre l){
+		titre=l.titre;
+		auteur=l.auteur
+		//... avec tout les attributs de la classe
+	}
+}
+
+//fichier de la class Manga.java
+class Manga extend Livre{
+	/...
+	//constructeur de la classe Fille
+	public Manga(Manga m){
+		//appel du constructeur par defaut de la class Mere Livre
+		super(m);
+		//puis on remplit les attributs de la classe fille
+		dessinateur=m.dessinateur;
+	}
+}
+```
+
+- C++
+
+```cpp
+//Livre.h
+class Livre{
+	protected:
+		std::string titre;
+		std::string auteur;
+	public:
+		Livre(Livre const& livre);
+}
+//Livre.cpp
+Livre::Livre(Livre const& livre):titre(livre.titre),auteur(livre.auteur){}
+
+//Manga.h
+class Manga : public Livre{
+	private:
+		std::string dessinateur;
+	public:
+		Manga(Manga const& manga);
+}
+
+//Manga.cpp
+Manga::Manga(Manga const& manga):titre(manga.titre),auteur(manga.auteur),dessinateur(manga.dessinateur){};
+```
+
+Maintenant que nous allons nous attarder sur l’héritage des méthodes.
+Comme nous l’avons vu l’héritage permet de réutiliser le code déjà écrit et d’ajouter de nouvelles fonctionnalités.
+Mais on peut modifier le comportement d’une fonctionnalité déjà existant, nottamment des méthodes.
+On appelle cette notion la redéfinition.
+
+## Redéfinition
+
+La redéfinition permet de modifier le comportement d’une méthode déja existante.
+
+### Exemple:
+
+Définissons les classes Animal, chien et chat.
+Chien et Chat hérite de la classe Mère animal.
+La classe animal possède la méthode cri dont le comportement est défini.
+Hors un chien et un chat on un cri différent.
+La redéfinition va nous permettre de changer le comportement de la méthode pour ces 2 classes.
+*(attention la méthode soit avoir la même signature que la méthode parent !)*
+
+Exemple en java :
+
+fichier Animal.java
+
+```java
+public class Animal {
+    protected String nom;
+    protected int nombreDePattes;
+
+    public Animal(){
+        nom="defaut";
+        nombreDePattes=0;
+    }
+
+    public Animal(String nom, int nombreDePattes){
+        this.nom=nom;
+        this.nombreDePattes=nombreDePattes;
+    }
+
+    public Animal(Animal animal){
+        nom=animal.nom;
+        nombreDePattes=animal.nombreDePattes;
+    }
+
+    public String getNom(){
+        return nom;
+    }
+
+    public int getNombreDePattes(){
+        return nombreDePattes;
+    }
+
+    public void setNom(String nom){
+        this.nom=nom;
+    }
+
+    public void setNombreDePattes(int nombreDePattes){
+        this.nombreDePattes=nombreDePattes;
+    }
+
+    //méthode que l'on va redéfinir
+    public void crier(){
+        System.out.println("Cri d'un animal");
+    }
+}
+```
+
+fichier Chat.java
+
+```java
+public class Chat extends Animal {
+    public Chat(){
+        super("Chat",4);
+    }
+
+    public Chat(String nom, int nombreDePattes){
+        super(nom, nombreDePattes);
+    }
+
+    public Chat(Chat chat){
+        super(chat);
+    }
+
+    //pas besoin de getter et de setter car deja défini dans la classe Mere Animal
+
+    //redéfinition de la méthode crier
+    public void crier(){
+        System.out.println("Miaou Meow !!!");
+    }
+}
+```
+
+fichier Chien.java
+
+```java
+public class Chien extends Animal{
+    public Chien(){
+        super("Chien",4);
+    }
+
+    public Chien(String nom, int nombreDePattes){
+        super(nom, nombreDePattes);
+    }
+
+    public Chien(Chien chien){
+        super(chien);
+    }
+
+    //pas besoin de getter et de setter car deja défini dans la classe Mere Animal
+
+    //redéfinition de la méthode crier
+    public void crier(){
+        System.out.println("Whouaf whouaf !!!");
+    }
+}
+```
+
+main.java
+
+```java
+public class main {
+    public static void main(String[] args){
+        Animal animal= new Animal();
+        Chien chien= new Chien("Médor",4);
+        Chat chat= new Chat("Miaouss",4);
+        animal.crier();
+        System.out.println("Nombre de pattes de l'animal par défaut : "+animal.getNombreDePattes());
+        //teste de la redéfinition
+        chien.crier();
+        chat.crier();
+        //teste des getters
+        System.out.println("Prenom du chien : "+chien.getNom());
+        System.out.println("Prenom du chat : "+chat.getNom());
+    }
+}
+```
+
+Commande à mettre dans le terminal
+
+```bash
+#si le code a été téléchargé sur mon github
+java main.java
+#sinon
+javac Animal.java
+javac Chien.java
+javac Chat.java
+java main.java
+```
+
+CODE C++ :
+
+Animal.h
+
+```cpp
+#ifndef ANIMAL_H
+#define ANIMAL_H
+
+#include <iostream>
+
+using namespace std;
+
+class Animal{
+private:
+    /*Méthode ou attribut dont la classe fille n'a pas accès*/
+protected:
+    /*Seule les filles ont directement accès aux méthodes ou attributs*/
+    string nom;
+    int nombreDePatte;
+public:
+    Animal();
+    Animal(string nom, int nombreDePatte);
+    Animal(Animal const& animal);
+    string getNom() const;
+    int getNombreDePatte() const;
+    void setNom(string nom);
+    void setNbPatte(int nombreDePatte);
+    virtual void crier() const;
+    ~Animal();
+};
+
+#endif
+```
+
+Animal.cpp
+
+```cpp
+#include "Animal.h"
+
+Animal::Animal():nom("defaut"),nombreDePatte(0){};
+Animal::Animal(string nom, int nombreDePatte):nom(nom),nombreDePatte(nombreDePatte){};
+Animal::Animal(Animal const& animal):nom(animal.nom),nombreDePatte(animal.nombreDePatte){};
+
+string Animal::getNom() const{return nom;}
+int Animal::getNombreDePatte() const{return nombreDePatte;}
+
+void Animal::setNom(string nom){this->nom=nom;}
+void Animal::setNbPatte(int nombreDePatte){this->nombreDePatte=nombreDePatte;}
+
+void Animal::crier() const{
+    cout<<"Reeuh"<<endl;
+}
+
+Animal::~Animal(){};
+```
+
+Fichier Chien.h
+
+```cpp
+#ifndef CHIEN_H
+#define CHIEN_H
+
+#include "Animal.h"
+
+class Chien : public Animal
+{
+private:
+    //attribut de la classe chien
+public:
+    Chien();
+    Chien(string nom, int nombreDePatte);
+    Chien(Chien const& chien);
+    void crier() const;
+    ~Chien();
+};
+
+#endif
+```
+
+Fichier Chien.cpp
+
+```cpp
+#include "Chien.h"
+
+Chien::Chien():Animal(){};
+Chien::Chien(string nom, int nombreDePatte):Animal(nom,nombreDePatte){};
+Chien::Chien(Chien const& chien):Animal(chien){};
+
+//redéfinition de la méthode crier
+
+inline void Chien::crier() const{
+    cout<<"Whouaf whouaf !!!"<<endl;
+}
+
+Chien::~Chien(){};
+```
+
+Fichier Chat.h
+
+```cpp
+#ifndef CHAT_H
+#define CHAT_H
+
+#include "Animal.h"
+
+class Chat : public Animal
+{
+private:
+    //attribut de la classe chat
+public:
+    Chat();
+    Chat(string nom, int nombreDePatte);
+    Chat(Chat const& chat);
+    void crier() const;
+    ~Chat();
+};
+
+#endif
+```
+
+Chat.cpp
+
+```cpp
+#include "Chat.h"
+
+Chat::Chat():Animal(){};
+Chat::Chat(string nom, int nombreDePatte):Animal(nom,nombreDePatte){};
+Chat::Chat(Chat const& chat):Animal(chat){};
+
+//redéfinition de la méthode crier
+inline void Chat::crier() const{
+    cout<<"Miaou Meow !!!"<<endl;
+}
+
+Chat::~Chat(){};
+```
+
+Main.cpp
+
+```cpp
+#include "Chat.h"
+#include "Chien.h"
+
+int main(){
+    Animal animal= Animal();
+    Chien chien("Médor",4);
+    Chat chat("Miaouss",4);
+    animal.crier();
+    cout<<"Nombre de pattes de l'animal par défaut : " <<animal.getNombreDePatte()<<endl;
+    //teste de la redéfinition
+    chien.crier();
+    chat.crier();
+    //teste des getters hérité
+    cout<<"Prenom du chien : "<<chien.getNom()<<endl;
+    cout<<"Prenom du chat : "<<chat.getNom()<<endl;
+    return 0;
+}
+```
+
+Commande à entrer dans le terminal
+
+```bash
+#si code télécharger depuis github
+./prog
+#sinon
+g++ main.cpp -o main.o -c
+g++ Chat.cpp -o chat.o -c
+g++ Chien.cpp -o chien.o -c
+g++ Animal.cpp -o animal.o -c
+g++ -o program main.o animal.o chat.o chien.o
+./prog
+```
+
+<aside>
+⚠️ En C++, il faut faire appel à l’annotation virtual, en effet si la méthode que l’on veut redéfinir n’est pas virtuelle alors le type de l’objet pointé sera celle de la classe Mère et non celle de la classe fille.
+Il est donc impératif de faire déclarer la méthode virtuelle qui dynamisera le type de l’objet !
+Je ferai un cours sur la virtualité à part.
+
+</aside>
 
 ---
 
@@ -1140,10 +1705,13 @@ TO-DO LIST
 - [x]  Destructeur
 - [x]  Setters
 - [x]  Getters
-- [ ]  Héritage simple
+- [x]  Expliquer la notion d’héritage
+- [x]  Héritage simple
 - [ ]  Polymorphisme
 - [ ]  Héritage multiple
-- [ ]  Redéfinition
+- [ ]  Interface
+- [ ]  Classe abstraite
+- [x]  Redéfinition
 - [ ]  Surcharge
 - [x]  Aggrégation
 - [x]  Composition
